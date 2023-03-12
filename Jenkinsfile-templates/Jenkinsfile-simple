@@ -1,0 +1,43 @@
+currentBuild.displayName = "team-java-repo-2-#"+currentBuild.number
+pipeline {
+	agent any
+	tools {
+    maven "MAVEN3"
+    jdk "JDK11"
+	}
+
+	stages {
+    stage('BUILD'){
+      steps{
+        echo 'Starting the Build...'
+        sh 'mvn install -DskipTests'
+      }
+
+      post {
+        success {
+          echo 'Now Archiving it...'
+          archiveArtifacts artifacts: '**/target/*.war'
+        }
+      }
+    }
+
+    stage('UNIT TEST') {
+      steps{
+        echo 'Starting the Unit Test...'
+        sh 'mvn test'
+      }
+	  }
+    stage('CODE ANALYSIS') {
+      steps{
+        echo 'Starting Checkstyle Code Analysis...'
+        sh 'mvn checkstyle:checkstyle'
+      }
+	  }
+  }
+  post {
+    always {
+      echo 'Cleaning the Workspace...'
+      cleanWs()
+    }
+  }
+}

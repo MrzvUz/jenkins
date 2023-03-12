@@ -1,0 +1,12 @@
+#!/usr/bin/env groovy
+// scan filesystem for vulnerable log4j files
+
+node {
+    
+  sh '''
+    cd "$(mktemp -d)"
+    git clone https://github.com/mergebase/log4j-detector.git
+    cd log4j-detector/
+    java -jar log4j-detector-*.jar $JENKINS_HOME
+  '''
+}
